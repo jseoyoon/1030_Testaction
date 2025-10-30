@@ -1,0 +1,28 @@
+name: Notify to Slack
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests
+        run: |
+          npm ci
+          npm test --if-present
+
+      # 성공 시 알림
+      - name: Notify success to Slack
+        if: ${{ success() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"✅ 빌드 성공! 브랜치: '${{ github.ref_name }}'"}' \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
+
+
