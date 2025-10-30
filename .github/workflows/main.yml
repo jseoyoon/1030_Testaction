@@ -1,8 +1,10 @@
 # Hello World 워크플로우
 name: Hello World
 
-# 모든 브랜치의 push 이벤트에서 실행
-on: [push]
+# ✅ push뿐만 아니라 웹에서 수동 실행도 가능하도록 설정
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   # 작업명: greet
