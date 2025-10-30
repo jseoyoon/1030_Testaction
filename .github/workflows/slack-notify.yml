@@ -1,4 +1,3 @@
-# Slack 알림 워크플로우
 name: Notify to Slack
 
 on:
@@ -19,18 +18,18 @@ jobs:
         with:
           node-version: '20'
 
-      # package.json이 있을 때만 실행
       - name: Install and Test
         if: hashFiles('**/package.json') != ''
         run: |
           npm ci --prefer-offline --no-audit --fund=false
           npm test --if-present
 
-      # 성공 시 알림
+      # ✅ 성공 시 알림
       - name: Notify success to Slack
         if: ${{ success() }}
         uses: slackapi/slack-github-action@v2
         with:
+          type: incoming-webhook        # ← 여기 추가!
           payload: |
             {
               "text": ":white_check_mark: 빌드 성공",
@@ -56,11 +55,12 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      # 실패 시 알림
+      # ✅ 실패 시 알림
       - name: Notify failure to Slack
         if: ${{ failure() }}
         uses: slackapi/slack-github-action@v2
         with:
+          type: incoming-webhook        # ← 여기도 동일하게 추가!
           payload: |
             {
               "text": ":x: ${{ github.repository }} 빌드 실패 (`${{ github.ref_name }}` 브랜치)",
