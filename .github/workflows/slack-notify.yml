@@ -29,41 +29,34 @@ jobs:
         if: ${{ success() }}
         uses: slackapi/slack-github-action@v2
         with:
-          type: incoming-webhook        # ← 여기 추가!
+          webhook-type: incoming-webhook        # ✅ 올바른 필드명
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}  # ✅ Webhook URL 입력
           payload: |
             {
-              "text": ":white_check_mark: 빌드 성공",
+              "text": ":white_check_mark: *${{ github.repository }}* `${{ github.ref_name }}` 브랜치 빌드 성공!",
               "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*${{ github.repository }}* `${{ github.ref_name }}` 브랜치 빌드 성공"
-                  }
-                },
                 {
                   "type": "context",
                   "elements": [
                     {
                       "type": "mrkdwn",
-                      "text": "워크플로우: ${{ github.workflow }} • 실행: #${{ github.run_number }}"
+                      "text": "워크플로우: *${{ github.workflow }}* • 실행: #${{ github.run_number }}"
                     }
                   ]
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # ✅ 실패 시 알림
       - name: Notify failure to Slack
         if: ${{ failure() }}
         uses: slackapi/slack-github-action@v2
         with:
-          type: incoming-webhook        # ← 여기도 동일하게 추가!
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
-              "text": ":x: ${{ github.repository }} 빌드 실패 (`${{ github.ref_name }}` 브랜치)",
+              "text": ":x: *${{ github.repository }}* 빌드 실패 (`${{ github.ref_name }}` 브랜치)",
               "attachments": [
                 {
                   "color": "#D32F2F",
@@ -75,5 +68,3 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
